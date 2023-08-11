@@ -1,15 +1,17 @@
 import {
-  Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpException,
   HttpStatus,
   Post,
+  UseFilters,
 } from '@nestjs/common';
 import { CatsService } from 'src/cats/cats.service';
-import { CreateCatDto } from 'src/cats/dto/create-cat.dto';
+import { HttpExceptionFilter } from 'src/common/filter/http-exception.filter';
 
 @Controller('cats')
+// @UseFilters(HttpExceptionFilter)
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
@@ -25,10 +27,21 @@ export class CatsController {
   //     return `This action adds a new cat.\n name: ${createCatDto.name}, age: ${createCatDto.age}, breed: ${createCatDto.breed}`;
   //   }
 
+  // @Post()
+  // async create(@Body() createCatDto: CreateCatDto) {
+  //   console.log(createCatDto);
+  //   this.catsService.create(createCatDto);
+  // }
+
+  // @Post()
+  // @UseFilters(HttpExceptionFilter)
+  // async create() {
+  //   throw new ForbiddenException();
+  // }
+
   @Post()
-  async create(@Body() createCatDto: CreateCatDto) {
-    console.log(createCatDto);
-    this.catsService.create(createCatDto);
+  async create() {
+    throw new ForbiddenException();
   }
 
   //   @Get()
