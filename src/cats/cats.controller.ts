@@ -1,14 +1,16 @@
 import {
+  Body,
   Controller,
-  ForbiddenException,
+  DefaultValuePipe,
   Get,
-  HttpException,
-  HttpStatus,
+  ParseBoolPipe,
+  ParseIntPipe,
   Post,
-  UseFilters,
+  Query,
 } from '@nestjs/common';
 import { CatsService } from 'src/cats/cats.service';
-import { HttpExceptionFilter } from 'src/common/filter/http-exception.filter';
+import { CreateCatDto } from 'src/cats/dto/create-cat.dto';
+import { ValidationPipe } from 'src/common/pipe/validation.pipe';
 
 @Controller('cats')
 // @UseFilters(HttpExceptionFilter)
@@ -39,9 +41,15 @@ export class CatsController {
   //   throw new ForbiddenException();
   // }
 
+  // @Post()
+  // @UsePipes(new JoiValidationPipe(createCatSchema))
+  // async create(@Body() createCatDto: CreateCatDto) {
+  //   this.catsService.create(createCatDto);
+  // }
+
   @Post()
-  async create() {
-    throw new ForbiddenException();
+  async create(@Body(new ValidationPipe()) createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
   }
 
   //   @Get()
@@ -75,8 +83,12 @@ export class CatsController {
   //   }
 
   @Get()
-  findAll() {
-    throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+  findAll(
+    @Query('activityOnly', new DefaultValuePipe(false), ParseBoolPipe)
+    activeOnly: boolean,
+    @Query('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
+  ) {
+    return this.catsService.findAll({ activeOnly, page });
   }
 
   //   @Get('ab*cd')
@@ -97,4 +109,9 @@ export class CatsController {
 
   //     return `This action returns a #${params.id} cat`;
   //   }
+
+  // @Get(':id')
+  // findOne(@Param('id', new ParseIntPipe()) id: number): string {
+  //   return this.catsService.findOne(id);
+  // }
 }
